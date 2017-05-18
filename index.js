@@ -21,24 +21,26 @@ const defaults = {
       parsePartialName: (options, file) => {
         const path = require('path')
 
-        return path.relative('./source', file.path)
+        let filePath = path.relative('./source', file.path)
           // Remove extension
           .replace(path.extname(file.path), '')
           // Use forward slashes on every OS
           .replace(new RegExp('\\' + path.sep, 'g'), '/')
+
+        return filePath
       }
     },
     data: (file) => {
       const path = require('path')
 
+      let data = {}
+
       // Find .data.js file with same name
-      return (() => {
-        try {
-          return require(file.path.replace(path.extname(file.path), '.data.js'))
-        } catch (e) {
-          return {}
-        }
-      })()
+      try {
+        data = require(file.path.replace(path.extname(file.path), '.data.js'))
+      } catch (e) {}
+
+      return data
     },
     prettify: {
       indent_with_tabs: false,
