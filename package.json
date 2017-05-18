@@ -1,0 +1,28 @@
+{
+  "name": "estatico-html",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --ui exports"
+  },
+  "author": "Unic AG",
+  "license": "MIT",
+  "devDependencies": {
+    "del": "^2.2.2",
+    "eslint": "^3.19.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-node": "^4.2.2",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "glob": "^7.1.1",
+    "mocha": "^3.4.1",
+    "should": "^11.2.1"
+  },
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-hb": "^6.0.2",
+    "gulp-prettify": "^0.5.0"
+  }
+}
