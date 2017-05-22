@@ -54,16 +54,16 @@ const defaults = {
   },
   dest: './build/',
   watch: [
-    './source/*.(hbs|data.js,md)',
-    './source/pages/**/*.(hbs|data.js,md)',
-    './source/demo/pages/**/*.(hbs|data.js,md)',
-    './source/modules/**/!(_)*.(hbs|data.js,md)',
-    './source/demo/modules/**/!(_)*.(hbs|data.js,md)',
-    './source/preview/styleguide/*.(hbs|data.js,md)'
+    './source/*.(hbs,data.js,md)',
+    './source/pages/**/*.(hbs,data.js,md)',
+    './source/demo/pages/**/*.(hbs,data.js,md)',
+    './source/modules/**/!(_)*.(hbs,data.js,md)',
+    './source/demo/modules/**/!(_)*.(hbs,data.js,md)',
+    './source/preview/styleguide/*.(hbs,data.js,md)'
   ]
 }
 
-const task = (options) => {
+const fn = (options, cb) => {
   const gulp = require('gulp')
   const merge = require('lodash.merge')
   const prettify = require('gulp-prettify')
@@ -99,12 +99,15 @@ const task = (options) => {
 
     // Save
     .pipe(gulp.dest(config.dest))
+
+    // (Optional) callback
+    .on('finish', cb || (() => {}))
 }
 
-task(defaults)
+// task(defaults)
 
 module.exports = {
   name,
-  task,
+  fn,
   defaults
 }

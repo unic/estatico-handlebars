@@ -34,7 +34,7 @@ module.exports = {
       }
     }
 
-    html.task(config).on('end', done)
+    html.fn(config).on('end', done)
   },
 
   default: function () {
