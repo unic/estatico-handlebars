@@ -54,12 +54,12 @@ const defaults = {
   },
   dest: './build/',
   watch: [
-    './source/*.(hbs,data.js,md)',
-    './source/pages/**/*.(hbs,data.js,md)',
-    './source/demo/pages/**/*.(hbs,data.js,md)',
-    './source/modules/**/!(_)*.(hbs,data.js,md)',
-    './source/demo/modules/**/!(_)*.(hbs,data.js,md)',
-    './source/preview/styleguide/*.(hbs,data.js,md)'
+    './source/*.(hbs|data.js|md)',
+    './source/pages/**/*.(hbs|data.js|md)',
+    './source/demo/pages/**/*.(hbs|data.js|md)',
+    './source/modules/**/!(_)*.(hbs|data.js|md)',
+    './source/demo/modules/**/!(_)*.(hbs|data.js|md)',
+    './source/preview/styleguide/*.(hbs|data.js|md)'
   ]
 }
 
