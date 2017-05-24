@@ -54,16 +54,16 @@ const defaults = {
   },
   dest: './build/',
   watch: [
-    './source/*.(hbs|data.js|md)',
-    './source/pages/**/*.(hbs|data.js|md)',
-    './source/demo/pages/**/*.(hbs|data.js|md)',
-    './source/modules/**/!(_)*.(hbs|data.js|md)',
-    './source/demo/modules/**/!(_)*.(hbs|data.js|md)',
-    './source/preview/styleguide/*.(hbs|data.js|md)'
+    './source/*.(hbs|data\.js|md)',
+    './source/pages/**/*.(hbs|data\.js|md)',
+    './source/demo/pages/**/*.(hbs|data\.js|md)',
+    './source/modules/**/!(_)*.(hbs|data\.js|md)',
+    './source/demo/modules/**/!(_)*.(hbs|data\.js|md)',
+    './source/preview/styleguide/*.(hbs|data\.js|md)'
   ]
 }
 
-const fn = (options, cb) => {
+const fn = (options, fileEvents, cb) => {
   const gulp = require('gulp')
   const merge = require('lodash.merge')
   const prettify = require('gulp-prettify')
@@ -73,9 +73,19 @@ const fn = (options, cb) => {
 
   const config = merge({}, defaults, options)
 
+  if (typeof fileEvents === 'function') {
+    cb = fileEvents
+    fileEvents = null
+  }
+
   return gulp.src(config.src, {
     base: config.srcBase
   })
+
+    // TODO: Add dependency graph and decide based on fileEvents which files to pass through
+    // .pipe(through.obj((file, enc, done) => {
+    //   done(null, file)
+    // }))
 
     // Find data and assign it to file object
     .pipe(through.obj((file, enc, done) => {
