@@ -1,5 +1,3 @@
-const name = 'html'
-
 const defaults = {
   src: [
     './source/*.hbs',
@@ -63,15 +61,12 @@ const defaults = {
   ]
 }
 
-const fn = (options, fileEvents, cb) => {
+const fn = (config, fileEvents, cb) => {
   const gulp = require('gulp')
-  const merge = require('lodash.merge')
   const prettify = require('gulp-prettify')
   const handlebars = require('gulp-hb')
   const path = require('path')
   const through = require('through2')
-
-  const config = merge({}, defaults, options)
 
   if (typeof fileEvents === 'function') {
     cb = fileEvents
@@ -114,10 +109,14 @@ const fn = (options, fileEvents, cb) => {
     .on('finish', cb || (() => {}))
 }
 
-// task(defaults)
+module.exports = (options) => {
+  const merge = require('lodash.merge')
 
-module.exports = {
-  name,
-  fn,
-  defaults
+  const config = merge({}, defaults, options)
+
+  return {
+    defaults,
+    config,
+    fn: fn.bind(null, config)
+  }
 }
