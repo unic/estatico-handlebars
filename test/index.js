@@ -6,8 +6,6 @@ const del = require('del')
 
 module.exports = {
   before: function (done) {
-    const html = require('../index.js')
-
     const config = {
       src: './test/fixtures/!(_)*.hbs',
       srcBase: './test/fixtures/',
@@ -34,7 +32,9 @@ module.exports = {
       }
     }
 
-    html.fn(config).on('end', done)
+    const task = require('../index.js')(config)
+
+    task.fn().on('end', done)
   },
 
   default: function () {
