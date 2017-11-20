@@ -64,44 +64,38 @@ const defaults = {
   ],
 };
 
-const fn = config => gulp.src(config.src, {
-  base: config.srcBase,
-})
+module.exports = (options) => {
+  const config = merge({}, defaults, options);
+
+  return gulp.src(config.src, {
+    base: config.srcBase,
+  })
 
   // TODO: Add dependency graph and decide based on fileEvents which files to pass through
   // .pipe(through.obj((file, enc, done) => {
   //   done(null, file)
   // }))
 
-  // Find data and assign it to file object
-  .pipe(through.obj((file, enc, done) => {
-    file.data = config.plugins.data(file); // eslint-disable-line no-param-reassign
+    // Find data and assign it to file object
+    .pipe(through.obj((file, enc, done) => {
+      file.data = config.plugins.data(file); // eslint-disable-line no-param-reassign
 
-    done(null, file);
-  }))
+      done(null, file);
+    }))
 
-  // Handlebars
-  .pipe(handlebars(config.plugins.handlebars).on('error', config.errorHandler))
+    // Handlebars
+    .pipe(handlebars(config.plugins.handlebars).on('error', config.errorHandler))
 
-  // Formatting
-  .pipe(prettify(config.plugins.prettify))
+    // Formatting
+    .pipe(prettify(config.plugins.prettify))
 
-  // Rename to .html
-  .pipe(through.obj((file, enc, done) => {
-    file.path = file.path.replace(path.extname(file.path), '.html'); // eslint-disable-line no-param-reassign
+    // Rename to .html
+    .pipe(through.obj((file, enc, done) => {
+      file.path = file.path.replace(path.extname(file.path), '.html'); // eslint-disable-line no-param-reassign
 
-    done(null, file);
-  }))
+      done(null, file);
+    }))
 
-  // Save
-  .pipe(gulp.dest(config.dest));
-
-module.exports = (options) => {
-  const config = merge({}, defaults, options);
-
-  return {
-    defaults,
-    config,
-    fn: fn.bind(null, config),
-  };
+    // Save
+    .pipe(gulp.dest(config.dest));
 };

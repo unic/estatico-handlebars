@@ -3,9 +3,10 @@ const glob = require('glob');
 const path = require('path');
 const fs = require('fs');
 const del = require('del');
+const task = require('../index.js');
 
 test.cb('default', (t) => {
-  const config = {
+  const options = {
     src: './test/fixtures/!(_)*.hbs',
     srcBase: './test/fixtures/',
     dest: './test/results/',
@@ -17,7 +18,7 @@ test.cb('default', (t) => {
         partials: [
           './test/fixtures/_*.hbs',
         ],
-        parsePartialName: (options, file) => path.relative('./test/fixtures', file.path)
+        parsePartialName: (partialOptions, file) => path.relative('./test/fixtures', file.path)
           .replace(path.extname(file.path), '')
           .replace(new RegExp(`\\${path.sep}`, 'g'), '/'),
       },
@@ -28,9 +29,7 @@ test.cb('default', (t) => {
     },
   };
 
-  const task = require('../index.js')(config); // eslint-disable-line global-require
-
-  task.fn().on('end', () => {
+  task(options).on('end', () => {
     const expected = glob.sync(path.join(__dirname, '/expected/**/*'), {
       nodir: true,
     });
@@ -47,6 +46,4 @@ test.cb('default', (t) => {
 });
 
 // Clean up
-test.after(() => {
-  return del(path.join(__dirname, '/results'));
-})
+test.after(() => del(path.join(__dirname, '/results')));

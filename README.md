@@ -12,11 +12,10 @@ $ npm i -S estatico-handlebars
 
 ```js
 const gulp = require('gulp');
-const handlebars = require('estatico-handlebars')({
-  // Custom options, deep-merged into defaults via _.merge
-});
+const handlebarsTask = require('estatico-handlebars');
+const handlebarsOptions = {}; // Custom options, deep-merged into defaults via _.merge
 
-gulp.task('html', handlebars.fn());
+gulp.task('html', () => handlebarsTask(handlebarsOptions));
 ```
 
 ### Options (TODO: format properly!)
