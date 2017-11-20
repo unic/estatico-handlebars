@@ -87,7 +87,7 @@ module.exports = (options) => {
     .pipe(handlebars(config.plugins.handlebars).on('error', config.errorHandler))
 
     // Formatting
-    .pipe(prettify(config.plugins.prettify))
+    .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : util.noop())
 
     // Rename to .html
     .pipe(through.obj((file, enc, done) => {
