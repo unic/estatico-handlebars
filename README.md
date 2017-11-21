@@ -18,64 +18,129 @@ const handlebarsOptions = {}; // Custom options, deep-merged into defaults via _
 gulp.task('html', () => handlebarsTask(handlebarsOptions));
 ```
 
-### Options (TODO: format properly!)
+### Options
 
+#### src
+
+Type: `Array` or `String`<br>
+Default:
 ```js
-src: [
+[
   './source/*.hbs',
   './source/pages/**/*.hbs',
   './source/demo/pages/**/*.hbs',
   './source/modules/**/!(_)*.hbs',
   './source/demo/modules/**/!(_)*.hbs',
   './source/preview/styleguide/*.hbs',
-],
-srcBase: './source',
-plugins: {
-  handlebars: {
-    partials: [
-      './source/layouts/*.hbs',
-      './source/modules/**/*.hbs',
-      './source/demo/modules/**/*.hbs',
-      './source/preview/**/*.hbs',
-    ],
-    parsePartialName: (options, file) => {
-      const filePath = path.relative('./source', file.path)
-        // Remove extension
-        .replace(path.extname(file.path), '')
-        // Use forward slashes on every OS
-        .replace(new RegExp(`\\${path.sep}`, 'g'), '/');
+]
+```
 
-      return filePath;
-    },
-  },
-  data: (file) => {
-    let data = {};
+Passed to `gulp.src`.
 
-    // Find .data.js file with same name
-    try {
-      data = importFresh(file.path.replace(path.extname(file.path), '.data.js'));
-    } catch (e) {} // eslint-disable-line no-empty
+#### srcBase
 
-    return data;
-  },
-  prettify: {
-    indent_with_tabs: false,
-    max_preserve_newlines: 1,
-  },
-},
-errorHandler: (error) => {
-  util.log(error.plugin, util.colors.cyan(error.fileName), util.colors.red(error.message));
-},
-dest: './build/',
-watch: [
+Type: `String`<br>
+Default: `'./source'`
+
+Passed as `base` option to `gulp.src`.
+
+#### dest
+
+Type: `String`<br>
+Default: `'./build'`
+
+Passed to `gulp.dest`.
+
+#### watch
+
+Type: `Array`/`String`<br>
+Default:
+```js
+[
   './source/*.(hbs|data.js|md)',
   './source/pages/**/*.(hbs|data.js|md)',
   './source/demo/pages/**/*.(hbs|data.js|md)',
   './source/modules/**/!(_)*.(hbs|data.js|md)',
   './source/demo/modules/**/!(_)*.(hbs|data.js|md)',
   './source/preview/styleguide/*.(hbs|data.js|md)',
-],
+]
 ```
+
+Used in separate watch task, changes to above files will trigger the task.
+
+#### errorHandler
+
+Type: `Function`<br>
+Default:
+```js
+(error) => {
+  util.log(error.plugin, util.colors.cyan(error.fileName), util.colors.red(error.message));
+}
+```
+
+Function to run if an error occurs in one of the steps.
+
+#### plugins
+
+Type: `Object`
+
+##### plugins.handlebars
+
+Type: `Object`<br>
+Default:
+```js
+handlebars: {
+  partials: [
+    './source/layouts/*.hbs',
+    './source/modules/**/*.hbs',
+    './source/demo/modules/**/*.hbs',
+    './source/preview/**/*.hbs',
+  ],
+  parsePartialName: (options, file) => {
+    const filePath = path.relative('./source', file.path)
+      // Remove extension
+      .replace(path.extname(file.path), '')
+      // Use forward slashes on every OS
+      .replace(new RegExp(`\\${path.sep}`, 'g'), '/');
+
+    return filePath;
+  },
+}
+```
+
+Passed to [`gulp-hb`](https://www.npmjs.com/package/gulp-hb).
+
+##### plugins.data
+
+Type: `Function`<br>
+Default:
+```js
+data: (file) => {
+  let data = {};
+
+  // Find .data.js file with same name
+  try {
+    data = importFresh(file.path.replace(path.extname(file.path), '.data.js'));
+  } catch (e) {} // eslint-disable-line no-empty
+
+  return data;
+}
+```
+
+Setting up data to be used in handlebars compiling. Return value will be assigned to `file.data` where [`gulp-hb`](https://www.npmjs.com/package/gulp-hb) picks it up.
+
+##### plugins.prettify
+
+Type: `Object`<br>
+Default:
+```js
+prettify: {
+  indent_with_tabs: false,
+  max_preserve_newlines: 1,
+}
+```
+
+Passed to [`gulp-prettify`](https://www.npmjs.com/package/gulp-prettify). Setting to `null` will disable this step.
 
 ## License
 
