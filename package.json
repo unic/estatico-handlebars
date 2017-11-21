@@ -19,7 +19,7 @@
     "glob": "^7.1.2"
   },
   "dependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-hb": "^6.0.2",
     "gulp-prettify": "^0.5.0",
     "gulp-util": "^3.0.8",
