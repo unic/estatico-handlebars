@@ -16,7 +16,7 @@ const defaults = {
     './src/demo/modules/**/!(_)*.hbs',
     './src/preview/styleguide/*.hbs',
   ],
-  srcBase: './source',
+  srcBase: './src',
   plugins: {
     handlebars: {
       partials: [
@@ -26,7 +26,7 @@ const defaults = {
         './src/preview/**/*.hbs',
       ],
       parsePartialName: (options, file) => {
-        const filePath = path.relative('./source', file.path)
+        const filePath = path.relative('./src', file.path)
           // Remove extension
           .replace(path.extname(file.path), '')
           // Use forward slashes on every OS

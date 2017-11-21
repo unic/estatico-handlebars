@@ -40,7 +40,7 @@ Passed to `gulp.src`.
 #### srcBase
 
 Type: `String`<br>
-Default: `'./source'`
+Default: `'./src'`
 
 Passed as `base` option to `gulp.src`.
 
@@ -97,7 +97,7 @@ handlebars: {
     './src/preview/**/*.hbs',
   ],
   parsePartialName: (options, file) => {
-    const filePath = path.relative('./source', file.path)
+    const filePath = path.relative('./src', file.path)
       // Remove extension
       .replace(path.extname(file.path), '')
       // Use forward slashes on every OS
