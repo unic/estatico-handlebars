@@ -9,21 +9,21 @@ const merge = require('lodash.merge');
 
 const defaults = {
   src: [
-    './source/*.hbs',
-    './source/pages/**/*.hbs',
-    './source/demo/pages/**/*.hbs',
-    './source/modules/**/!(_)*.hbs',
-    './source/demo/modules/**/!(_)*.hbs',
-    './source/preview/styleguide/*.hbs',
+    './src/*.hbs',
+    './src/pages/**/*.hbs',
+    './src/demo/pages/**/*.hbs',
+    './src/modules/**/!(_)*.hbs',
+    './src/demo/modules/**/!(_)*.hbs',
+    './src/preview/styleguide/*.hbs',
   ],
   srcBase: './source',
   plugins: {
     handlebars: {
       partials: [
-        './source/layouts/*.hbs',
-        './source/modules/**/*.hbs',
-        './source/demo/modules/**/*.hbs',
-        './source/preview/**/*.hbs',
+        './src/layouts/*.hbs',
+        './src/modules/**/*.hbs',
+        './src/demo/modules/**/*.hbs',
+        './src/preview/**/*.hbs',
       ],
       parsePartialName: (options, file) => {
         const filePath = path.relative('./source', file.path)
@@ -53,14 +53,14 @@ const defaults = {
   errorHandler: (error) => {
     util.log(error.plugin, util.colors.cyan(error.fileName), util.colors.red(error.message));
   },
-  dest: './build/',
+  dest: './dist/',
   watch: [
-    './source/*.(hbs|data.js|md)',
-    './source/pages/**/*.(hbs|data.js|md)',
-    './source/demo/pages/**/*.(hbs|data.js|md)',
-    './source/modules/**/!(_)*.(hbs|data.js|md)',
-    './source/demo/modules/**/!(_)*.(hbs|data.js|md)',
-    './source/preview/styleguide/*.(hbs|data.js|md)',
+    './src/*.(hbs|data.js|md)',
+    './src/pages/**/*.(hbs|data.js|md)',
+    './src/demo/pages/**/*.(hbs|data.js|md)',
+    './src/modules/**/!(_)*.(hbs|data.js|md)',
+    './src/demo/modules/**/!(_)*.(hbs|data.js|md)',
+    './src/preview/styleguide/*.(hbs|data.js|md)',
   ],
 };
 
