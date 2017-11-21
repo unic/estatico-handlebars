@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const prettify = require('gulp-prettify');
 const handlebars = require('gulp-hb');
 const path = require('path');
+const fs = require('fs');
 const through = require('through2');
 const util = require('gulp-util');
 const importFresh = require('import-fresh');
@@ -36,12 +37,21 @@ const defaults = {
       },
     },
     data: (file) => {
+      const dataFilePath = file.path.replace(path.extname(file.path), '.data.js');
       let data = {};
 
       // Find .data.js file with same name
+      if (!fs.existsSync(dataFilePath)) {
+        util.log('estatico-handlebars', util.colors.cyan(file.path), 'No data file found');
+
+        return data;
+      }
+
       try {
-        data = importFresh(file.path.replace(path.extname(file.path), '.data.js'));
-      } catch (e) {} // eslint-disable-line no-empty
+        data = importFresh(dataFilePath);
+      } catch (err) {
+        util.log('estatico-handlebars', util.colors.cyan(file.path), util.colors.red(err.message));
+      }
 
       return data;
     },
