@@ -1,4 +1,5 @@
 const gulp = require('gulp');
+const plumber = require('gulp-plumber');
 const prettify = require('gulp-prettify');
 const handlebars = require('gulp-hb');
 const path = require('path');
@@ -37,31 +38,15 @@ const defaults = {
       },
     },
     data: (file) => {
-      const dataFilePath = file.path.replace(path.extname(file.path), '.data.js');
-      let data = {};
-
-      // Find .data.js file with same name
-      if (!fs.existsSync(dataFilePath)) {
-        util.log('estatico-handlebars', util.colors.cyan(file.path), 'No data file found');
-
-        return data;
-      }
-
-      try {
-        data = importFresh(dataFilePath);
-      } catch (err) {
-        util.log('estatico-handlebars', util.colors.cyan(file.path), util.colors.red(err.message));
-      }
-
-      return data;
+      return importFresh(file.path.replace(path.extname(file.path), '.data.js'));
     },
     prettify: {
       indent_with_tabs: false,
       max_preserve_newlines: 1,
     },
   },
-  errorHandler: (error) => {
-    util.log(error.plugin, util.colors.cyan(error.fileName), util.colors.red(error.message));
+  errorHandler: (err) => {
+    util.log(`estatico-handlebars${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
   },
   dest: './dist/',
   watch: [
@@ -81,17 +66,27 @@ module.exports = (options) => {
     base: config.srcBase,
   })
 
-  // TODO: Add dependency graph and decide based on fileEvents which files to pass through
-  // .pipe(through.obj((file, enc, done) => {
-  //   done(null, file)
-  // }))
+    // Prevent stream from unpiping on error
+    .pipe(plumber())
+
+    // TODO: Add dependency graph and decide based on fileEvents which files to pass through
+    // .pipe(through.obj((file, enc, done) => {
+    //   done(null, file)
+    // }))
 
     // Find data and assign it to file object
     .pipe(through.obj((file, enc, done) => {
-      file.data = config.plugins.data(file); // eslint-disable-line no-param-reassign
+      try {
+        file.data = config.plugins.data(file); // eslint-disable-line no-param-reassign
 
-      done(null, file);
-    }))
+        done(null, file);
+      } catch(err) {
+        err.plugin = 'data';
+        err.fileName = file.path;
+
+        done(err, file);
+      }
+    }).on('error', config.errorHandler))
 
     // Handlebars
     .pipe(handlebars(config.plugins.handlebars).on('error', config.errorHandler))

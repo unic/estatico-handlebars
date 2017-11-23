@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ava test/index.js --serial",
+    "test": "ava test/index.js --serial --verbose",
     "lint": "eslint --fix \"{,**,**/**}*.js\"",
     "update-dependencies": "npx npm-check-updates -u -a"
   },
@@ -16,11 +16,13 @@
     "eslint": "^4.11.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
-    "glob": "^7.1.2"
+    "glob": "^7.1.2",
+    "sinon": "^4.1.2"
   },
   "dependencies": {
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-hb": "^6.0.2",
+    "gulp-plumber": "^1.1.0",
     "gulp-prettify": "^0.5.0",
     "gulp-util": "^3.0.8",
     "import-fresh": "^2.0.0",

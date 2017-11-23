@@ -1,4 +1,5 @@
 const test = require('ava');
+const sinon = require('sinon');
 const glob = require('glob');
 const path = require('path');
 const fs = require('fs');
@@ -7,13 +8,13 @@ const merge = require('lodash.merge');
 const task = require('../index.js');
 
 const defaults = {
-  src: './test/fixtures/!(_)*.hbs',
+  src: './test/fixtures/index.hbs',
   srcBase: './test/fixtures/',
   dest: './test/results/',
   plugins: {
-    data: file =>
-      // Use JSON file with same name as html file
-      require(file.path.replace(path.extname(file.path), '.json')), // eslint-disable-line global-require, import/no-dynamic-require
+    data: file => {
+      return require(file.path.replace(path.extname(file.path), '.json'));
+    },
     handlebars: {
       partials: [
         './test/fixtures/_*.hbs',
@@ -44,6 +45,10 @@ const compare = (t, name) => {
   t.end();
 };
 
+const stripLog = (str) => {
+  return str.replace(/\n/gm, '').replace(/\t/g, ' ').replace(/\s\s+/g, ' ')
+}
+
 test.cb('default', (t) => {
   task(defaults).on('end', () => compare(t, 'default'));
 });
@@ -58,5 +63,39 @@ test.cb('unprettified', (t) => {
   task(options).on('end', () => compare(t, 'unprettified'));
 });
 
-// Clean up
+test.cb('error', (t) => {
+  const options = merge({}, defaults, {
+    src: './test/fixtures/error.hbs',
+    errorHandler: (err) => {
+      console.log(err.message);
+    },
+  });
+
+  const spy = sinon.spy(console, 'log');
+
+  task(options).on('end', () => {
+    spy.restore();
+
+    const data = {
+      error: stripLog(spy.getCall(1).args[0])
+        .replace(/(.*?)\/(test)/, '$2'),
+      expected: stripLog(`test/fixtures/error.json: Unexpected token
+ in JSON at position 15`)
+    };
+
+    const handlebars = {
+      error: stripLog(spy.getCall(0).args[0]), // For some reason, this error is emitted before the data one
+      expected: stripLog(`Parse error on line 2:
+<div> {{> _partial}</div>
+------------------^
+Expecting 'CLOSE_RAW_BLOCK', 'CLOSE', 'CLOSE_UNESCAPED', 'OPEN_SEXPR', 'CLOSE_SEXPR', 'ID', 'OPEN_BLOCK_PARAMS', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', 'SEP', got 'INVALID'`)
+    };
+
+    t.is(data.error, data.expected);
+    t.is(handlebars.error, handlebars.expected);
+
+    t.end();
+  });
+});
+
 test.afterEach(() => del(path.join(__dirname, '/results')));
