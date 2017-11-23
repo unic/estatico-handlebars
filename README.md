@@ -73,8 +73,8 @@ Used in separate watch task, changes to above files will trigger the task.
 Type: `Function`<br>
 Default:
 ```js
-(error) => {
-  util.log(error.plugin, util.colors.cyan(error.fileName), util.colors.red(error.message));
+(err) => {
+  util.log(`estatico-handlebars${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
 }
 ```
 
