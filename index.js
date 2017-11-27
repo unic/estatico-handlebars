@@ -81,10 +81,9 @@ module.exports = (options) => {
 
         done(null, file);
       } catch(err) {
-        err.plugin = 'data';
         err.fileName = file.path;
 
-        done(err, file);
+        done(new util.PluginError('data', err), file);
       }
     }).on('error', config.errorHandler))
 
