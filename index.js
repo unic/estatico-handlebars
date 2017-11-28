@@ -3,7 +3,6 @@ const plumber = require('gulp-plumber');
 const prettify = require('gulp-prettify');
 const handlebars = require('gulp-hb');
 const path = require('path');
-const fs = require('fs');
 const through = require('through2');
 const log = require('fancy-log');
 const PluginError = require('plugin-error');
@@ -39,9 +38,7 @@ const defaults = {
         return filePath;
       },
     },
-    data: (file) => {
-      return importFresh(file.path.replace(path.extname(file.path), '.data.js'));
-    },
+    data: file => importFresh(file.path.replace(path.extname(file.path), '.data.js')),
     prettify: {
       indent_with_tabs: false,
       max_preserve_newlines: 1,
@@ -82,7 +79,7 @@ module.exports = (options) => {
         file.data = config.plugins.data(file); // eslint-disable-line no-param-reassign
 
         done(null, file);
-      } catch(err) {
+      } catch (err) {
         err.fileName = file.path;
 
         done(new PluginError('data', err), file);

@@ -1,6 +1,7 @@
 const test = require('ava');
 const sinon = require('sinon');
 const glob = require('glob');
+const stripAnsi = require('strip-ansi');
 const path = require('path');
 const fs = require('fs');
 const del = require('del');
@@ -12,9 +13,7 @@ const defaults = {
   srcBase: './test/fixtures/',
   dest: './test/results/',
   plugins: {
-    data: file => {
-      return require(file.path.replace(path.extname(file.path), '.json'));
-    },
+    data: file => require(file.path.replace(path.extname(file.path), '.json')), // eslint-disable-line global-require, import/no-dynamic-require
     handlebars: {
       partials: [
         './test/fixtures/_*.hbs',
@@ -45,9 +44,7 @@ const compare = (t, name) => {
   t.end();
 };
 
-const stripLog = (str) => {
-  return str.replace(/\n/gm, '').replace(/\t/g, ' ').replace(/\s\s+/g, ' ')
-}
+const stripLog = str => stripAnsi(str.replace(/\n/gm, '').replace(/\t/g, ' ')).replace(/\s\s+/g, ' ');
 
 test.cb('default', (t) => {
   task(defaults).on('end', () => compare(t, 'default'));
@@ -66,9 +63,6 @@ test.cb('unprettified', (t) => {
 test.cb('error', (t) => {
   const options = merge({}, defaults, {
     src: './test/fixtures/error.hbs',
-    errorHandler: (err) => {
-      console.log(err.message);
-    },
   });
 
   const spy = sinon.spy(console, 'log');
@@ -77,18 +71,19 @@ test.cb('error', (t) => {
     spy.restore();
 
     const data = {
-      error: stripLog(spy.getCall(1).args[0])
-        .replace(/(.*?)\/(test)/, '$2'),
+      error: stripLog(spy.getCall(1).args.join(' '))
+        .replace(/(.*?)\/(test\/fixtures\/error\.json)/, '$2'),
       expected: stripLog(`test/fixtures/error.json: Unexpected token
- in JSON at position 15`)
+ in JSON at position 15`),
     };
 
     const handlebars = {
-      error: stripLog(spy.getCall(0).args[0]), // For some reason, this error is emitted before the data one
-      expected: stripLog(`Parse error on line 2:
+      error: stripLog(spy.getCall(0).args.join(' '))
+        .replace(/(.*?)\/(test\/fixtures\/error\.hbs)/, '$2'), // For some reason, this error is emitted before the data one
+      expected: stripLog(`test/fixtures/error.hbs Parse error on line 2:
 <div> {{> _partial}</div>
 ------------------^
-Expecting 'CLOSE_RAW_BLOCK', 'CLOSE', 'CLOSE_UNESCAPED', 'OPEN_SEXPR', 'CLOSE_SEXPR', 'ID', 'OPEN_BLOCK_PARAMS', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', 'SEP', got 'INVALID'`)
+Expecting 'CLOSE_RAW_BLOCK', 'CLOSE', 'CLOSE_UNESCAPED', 'OPEN_SEXPR', 'CLOSE_SEXPR', 'ID', 'OPEN_BLOCK_PARAMS', 'STRING', 'NUMBER', 'BOOLEAN', 'UNDEFINED', 'NULL', 'DATA', 'SEP', got 'INVALID'`),
     };
 
     t.is(data.error, data.expected);
