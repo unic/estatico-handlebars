@@ -5,7 +5,9 @@ const handlebars = require('gulp-hb');
 const path = require('path');
 const fs = require('fs');
 const through = require('through2');
-const util = require('gulp-util');
+const log = require('fancy-log');
+const PluginError = require('plugin-error');
+const chalk = require('chalk');
 const importFresh = require('import-fresh');
 const merge = require('lodash.merge');
 
@@ -46,7 +48,7 @@ const defaults = {
     },
   },
   errorHandler: (err) => {
-    util.log(`estatico-handlebars${err.plugin ? ` (${err.plugin})` : null}`, util.colors.cyan(err.fileName), util.colors.red(err.message));
+    log(`estatico-handlebars${err.plugin ? ` (${err.plugin})` : null}`, chalk.cyan(err.fileName), chalk.red(err.message));
   },
   dest: './dist/',
   watch: [
@@ -83,7 +85,7 @@ module.exports = (options) => {
       } catch(err) {
         err.fileName = file.path;
 
-        done(new util.PluginError('data', err), file);
+        done(new PluginError('data', err), file);
       }
     }).on('error', config.errorHandler))
 
@@ -91,7 +93,7 @@ module.exports = (options) => {
     .pipe(handlebars(config.plugins.handlebars).on('error', config.errorHandler))
 
     // Formatting
-    .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : util.noop())
+    .pipe(config.plugins.prettify ? prettify(config.plugins.prettify) : through.obj())
 
     // Rename to .html
     .pipe(through.obj((file, enc, done) => {
